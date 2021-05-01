@@ -437,12 +437,3 @@ def parse_program(tokens, position):
     [current_position,_] = parse_token(tokens, current_position, 'end')
 
     return (current_position, statements)
-
-
-input_string = "(if (> 1 2) (+ x 1)(+ x 2))(defun f () (+ x 1))(defconstant PI 3.14)"
-
-tokens = tokenize(input_string)
-
-[pos, prog] = parse_program(tokens, 0)
-
-prog.print(0)
