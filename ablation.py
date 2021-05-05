@@ -152,6 +152,8 @@ class IfStatementTerm(StatementTerm):
             print(space_char*(level+1), "False branch:")
             self.else_statement.print(level+2)
 
+        
+
 
 class ExpressionTerm(Term):
     pass
