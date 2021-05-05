@@ -145,9 +145,9 @@ class IfStatementTerm(StatementTerm):
     def print_cst(self,level):
         print(space_char*(level), "if")
         self.condition.print_cst(level+1)
-        print(space_char*(level), "then")
+        #print(space_char*(level), "then")
         self.statement.print_cst(level+1)
-        print(space_char*(level), "else")
+        #print(space_char*(level), "else")
         if self.else_statement != None:
             self.else_statement.print_cst(level+1)
 

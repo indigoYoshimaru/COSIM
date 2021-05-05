@@ -45,9 +45,10 @@ def tokenize(str):
             return result
     return result
 
-
-if __name__ == "__main__":
-    input_string = "(if (> 1 2) (+ x 1)(+ x 2))(defun f () (+ x 1))(defconstant PI 3.14)"
-    tokens = tokenize(input_string)
+def print_tokens(tokens):
+    print("==========TOKENS=========")
     for token in tokens:
         print(token.text, end=space_char)
+    print()
+
+    
