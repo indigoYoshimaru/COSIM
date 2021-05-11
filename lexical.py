@@ -1,20 +1,27 @@
 # defining all lexical class
 
 space_char = "    "
+
+
 class Term:
     def value(self):
         return self
 
     def print_ast(self, level):
         pass
+
     def print_cst(self, level):
         pass
+
     def pre_gen_code(self, writer):
         pass
-    def gen_code(self,writer):
+
+    def gen_code(self, writer):
         pass
-    def print_symbol(self,sym_tab,level):
+
+    def print_symbol(self, sym_tab, level):
         pass
+
 
 class TokenTerm(Term):
     def __init__(self, token):
@@ -27,9 +34,9 @@ class TokenTerm(Term):
     def print_ast(self, level):
         print(space_char*level, self.__class__.__name__,
               self.token.token_type, self.token.text)
-    
+
     def print_cst(self, level):
-        print(space_char*level,self.token.text)
+        print(space_char*level, self.token.text)
 
 
 class GroupTerm(Term):
@@ -41,12 +48,16 @@ class GroupTerm(Term):
         return self.terms
 
     def print_ast(self, level):
-        print("==========ABSTRACT SYNTAX TREE==========")
+        if (level == 0):
+            print("==========ABSTRACT SYNTAX TREE==========")
+
         for t in self.terms:
             t.print_ast(level)
-    
+
     def print_cst(self, level):
-        print("==========CONCRETE SYNTAX TREE==========")
+        if (level == 0):
+            print("==========CONCRETE SYNTAX TREE==========")
+
         for t in self.terms:
             t.print_cst(level)
 
@@ -71,7 +82,6 @@ class DefConstantTerm(StatementTerm):
         print(space_char*level, self.number_value)
 
 
-
 class DefVarTerm(StatementTerm):
     def __init__(self, variable_name, expression):
         super().__init__()
@@ -84,7 +94,7 @@ class DefVarTerm(StatementTerm):
         print(space_char*(level+1), "Expression: ")
         self.expression.print_ast(level+2)
 
-    def print_cst(self,level):
+    def print_cst(self, level):
         print(space_char*(level), self.variable_name)
         self.expression.print_cst(level+1)
 
@@ -106,11 +116,10 @@ class DefunTerm(StatementTerm):
         print(space_char*(level), self.function_name)
         self.statements.print_cst(level+1)
 
-    
 
 class AssignmentStatementTerm(StatementTerm):
-    def __init__(self, tokens_positions, variable_name, expression):
-        super().__init__(tokens_positions)
+    def __init__(self,  variable_name, expression):
+        super().__init__()
         self.variable_name = variable_name
         self.expression = expression
 
@@ -124,6 +133,7 @@ class AssignmentStatementTerm(StatementTerm):
         print(space_char*(level), self.variable_name)
         print(space_char*(level), self.variable_name)
         self.expression.print_cst(level+1)
+
 
 class IfStatementTerm(StatementTerm):
     def __init__(self, condition, statement, else_statement):
@@ -142,7 +152,7 @@ class IfStatementTerm(StatementTerm):
             print(space_char*(level+1), "False branch:")
             self.else_statement.print_ast(level+2)
 
-    def print_cst(self,level):
+    def print_cst(self, level):
         print(space_char*(level), "if")
         self.condition.print_cst(level+1)
         #print(space_char*(level), "then")
@@ -165,7 +175,8 @@ class NumberExpressionTerm(ExpressionTerm):
         print(space_char*level, self.__class__.__name__, self.value)
 
     def print_cst(self, level):
-        print(space_char*level,self.value)
+        print(space_char*level, self.value)
+
 
 class IdentifierExpressionTerm(ExpressionTerm):
     def __init__(self, identifier_name):
@@ -177,6 +188,7 @@ class IdentifierExpressionTerm(ExpressionTerm):
 
     def print_cst(self, level):
         print(space_char*level, self.identifier_name)
+
 
 class OperatorExpressionTerm(ExpressionTerm):
     def __init__(self, operator, left, right):
@@ -192,11 +204,12 @@ class OperatorExpressionTerm(ExpressionTerm):
         self.left.print_ast(level+2)
         print(space_char*(level+1), "Right expression:")
         self.right.print_ast(level+2)
-    
+
     def print_cst(self, level):
         print(space_char*(level), self.operator)
         self.left.print_cst(level+1)
         self.right.print_cst(level+1)
+
 
 class FunctionCallExpressionTerm(ExpressionTerm):
     def __init__(self, function_name, params):
