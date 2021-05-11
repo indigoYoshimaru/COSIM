@@ -6,8 +6,8 @@ of an atom after a period of decay.
 |#
 
 (defun massdecay (mass time halflife)
-    (* (/ (- mass halflife) halflife) time)
-
+    ; (* (/ (- mass halflife) halflife) time)
+	(* mass (expt E (* (/ (- 0 log_2) halflife) time)))
 	#|
 	The formula used:
 		m = m0 * E ^ (-lambda*t)
@@ -23,7 +23,9 @@ with user's inputs to calculate the remaining mass
 of an atom and compare that mass with half of the 
 initial mass.
 |#
+; no requirement on implement the log function
 
+(setq log_2 0.6931)
 (defconstant E 2.7)	; define constant E
 (setq re (massdecay 1 2 3))
 

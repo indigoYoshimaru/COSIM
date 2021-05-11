@@ -1,7 +1,7 @@
 import re
 
 pattern = re.compile(
-    "(?P<keyword>if|defconstant|defvar|defun|setq)\\b|(?P<identifier>[_a-zA-Z][_a-zA-Z0-9]*)\\b|(?P<number>-?([1-9][0-9]*|0)(\\.[0-9]*)?)|(?P<literal>[-\\+\\*/\\(\\)<>=]|/=|[<>]=)|(?P<space>\\s+)|(?P<end>$)|(?P<invalid>.)", re.M | re.S)
+    "(?P<keyword>if|defconstant|defvar|defun|setq)\\b|(?P<identifier>[_a-zA-Z][_a-zA-Z0-9]*)\\b|(?P<number>-?([1-9][0-9]*|0)(\\.[0-9]*)?)|(?P<literal>[-\\+\\*/\\(\\)<>=]|expt|log|/=|[<>]=)|(?P<space>\\s+)|(?P<end>$)|(?P<invalid>.)", re.M | re.S)
 
 space_char = "    "
 
@@ -45,10 +45,9 @@ def tokenize(str):
             return result
     return result
 
+
 def print_tokens(tokens):
     print("==========TOKENS=========")
     for token in tokens:
         print(token.text, end=space_char)
     print()
-
-    

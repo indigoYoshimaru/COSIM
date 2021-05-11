@@ -6,7 +6,6 @@ of an atom after a period of decay.
 |#
 
 (defun massdecay (mass time halflife)
-    (defconstant E 2.7)	; define constant E
     (* mass (expt E (* (/ (- 0 log 2)) halflife) time))
 	#|
 	The formula used:
@@ -25,7 +24,7 @@ initial mass.
 |#
 
 
-
+(defconstant E 2.7)	; define constant E
 (setq mass (read))
 (terpri)
 
