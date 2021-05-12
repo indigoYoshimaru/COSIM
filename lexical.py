@@ -1,5 +1,8 @@
 # defining all lexical class
 
+from os import get_terminal_size
+
+
 space_char = "    "
 
 
@@ -13,10 +16,13 @@ class Term:
     def print_cst(self, level):
         pass
 
-    def pre_gen_code(self, writer):
+    def pre_gen_code(self, generator):
         pass
 
-    def gen_code(self, writer):
+    def gen_main(self, generator):
+        pass
+
+    def gen_func(self, generator):
         pass
 
     def print_symbol(self, sym_tab, level):
@@ -61,25 +67,42 @@ class GroupTerm(Term):
         for t in self.terms:
             t.print_cst(level)
 
+    def pre_gen_code(self, generator):
+        for t in self.terms:
+            t.pre_gen_code(generator)
+
+    def gen_main(self, generator):
+        generator.start_main()
+        for t in self.terms:
+            t.gen_main(generator)
+
+    def gen_func(self, generator):
+        generator.close_main()
+        for t in self.terms:
+            t.gen_func(generator)
+
 
 class StatementTerm(Term):
     pass
 
 
 class DefConstantTerm(StatementTerm):
-    def __init__(self, contant_name, number_value):
+    def __init__(self, constant_name, number_value):
         super().__init__()
-        self.contant_name = contant_name
+        self.constant_name = constant_name
         self.number_value = number_value
 
     def print_ast(self, level):
         print(space_char*level, self.__class__.__name__)
-        print(space_char*(level+1), "Constant name: ", self.contant_name)
+        print(space_char*(level+1), "Constant name: ", self.constant_name)
         print(space_char*(level+1), "Value: ", self.number_value)
 
     def print_cst(self, level):
-        print(space_char*level, self.contant_name)
+        print(space_char*level, self.constant_name)
         print(space_char*level, self.number_value)
+
+    def pre_gen_code(self, generator):
+        generator.pregen('constant', self)
 
 
 class DefVarTerm(StatementTerm):
@@ -115,6 +138,9 @@ class DefunTerm(StatementTerm):
     def print_cst(self, level):
         print(space_char*(level), self.function_name)
         self.statements.print_cst(level+1)
+
+    def pre_gen_code(self, generator):
+        generator.pregen('function', self)
 
 
 class AssignmentStatementTerm(StatementTerm):
@@ -155,11 +181,19 @@ class IfStatementTerm(StatementTerm):
     def print_cst(self, level):
         print(space_char*(level), "if")
         self.condition.print_cst(level+1)
-        #print(space_char*(level), "then")
         self.statement.print_cst(level+1)
-        #print(space_char*(level), "else")
         if self.else_statement != None:
             self.else_statement.print_cst(level+1)
+
+    def gen_main(self, generator):
+        generator.gen_keyword('if (')
+        self.condition.gen_main(generator)
+        generator.gen_keyword('){ ')
+        self.statement.gen_main(generator)
+        if self.else_statement != None:
+            generator.gen_keyword('} else { ')
+            self.else_statement.gen_main(generator)
+            generator.gen_keyword('}')
 
 
 class ExpressionTerm(Term):
@@ -177,6 +211,9 @@ class NumberExpressionTerm(ExpressionTerm):
     def print_cst(self, level):
         print(space_char*level, self.value)
 
+    def gen_main(self, generator):
+        generator.gen_number(self.value)
+
 
 class IdentifierExpressionTerm(ExpressionTerm):
     def __init__(self, identifier_name):
@@ -188,6 +225,9 @@ class IdentifierExpressionTerm(ExpressionTerm):
 
     def print_cst(self, level):
         print(space_char*level, self.identifier_name)
+
+    def gen_main(self, generator):
+        generator.gen_keyword(self.identifier_name)
 
 
 class OperatorExpressionTerm(ExpressionTerm):
@@ -209,6 +249,11 @@ class OperatorExpressionTerm(ExpressionTerm):
         print(space_char*(level), self.operator)
         self.left.print_cst(level+1)
         self.right.print_cst(level+1)
+
+    def gen_main(self, generator):
+        self.left.gen_main(generator)
+        generator.gen_keyword(self.operator)
+        self.right.gen_main(generator)
 
 
 class FunctionCallExpressionTerm(ExpressionTerm):
