@@ -5,7 +5,6 @@ class Generator():
         'constant': []
     }
     print(glob_dec['function'])
-    # glob_dec['constant'] = l
 
     code_stream = {
         'main': '', 'function_imp': ''
@@ -81,5 +80,5 @@ class Generator():
         self.code_stream += 'double '+variable_name
         # no ; here because of the expression
 
-    def gen_number(self, value):  # keywords can be if, else,etc
+    def gen_number(self, value):
         self.code_stream[self.s_name] += str(value)
