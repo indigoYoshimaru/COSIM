@@ -75,7 +75,10 @@ class Generator():
 
     def gen_keyword(self, keyword):  # keywords can be if, else,etc
         self.code_stream[self.s_name] += keyword
-
+    
+    def gen_expt_operator(self, op):
+       self.code_stream+='pow('
+    
     def gen_var(self, variable_name):
         self.code_stream += 'double '+variable_name
         # no ; here because of the expression

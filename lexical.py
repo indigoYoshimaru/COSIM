@@ -252,8 +252,11 @@ class OperatorExpressionTerm(ExpressionTerm):
 
     def gen_main(self, generator):
         self.left.gen_main(generator)
-        generator.gen_keyword(self.operator)
+        generator.gen_keyword(self.operator)# change this to gen_operator
         self.right.gen_main(generator)
+
+        if (self.operator=='expt'):
+            generator.gen_operator()
 
 
 class FunctionCallExpressionTerm(ExpressionTerm):
