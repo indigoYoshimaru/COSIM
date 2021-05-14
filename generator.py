@@ -71,7 +71,7 @@ class Generator():
 
     def close_main(self):
         self.code_stream[self.s_name] += '}'  # close main
-        self.s_name = 'func'
+        self.s_name = 'function_imp'
 
     def gen_keyword(self, keyword):  # keywords can be if, else,etc
         self.code_stream[self.s_name] += keyword
@@ -80,7 +80,7 @@ class Generator():
        self.code_stream+='pow('
     
     def gen_var(self, variable_name):
-        self.code_stream += 'double '+variable_name
+        self.code_stream += 'double '+variable_name+'='
         # no ; here because of the expression
 
     def gen_number(self, value):
