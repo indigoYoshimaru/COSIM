@@ -25,7 +25,7 @@ initial mass.
 |#
 ; no requirement on implement the log function
 
-(defconstant log_2 0.6931)
+(setq log_2 0.6931)
 (defconstant E 2.7)	; define constant E
 (setq re (massdecay 1 2 3))
 
