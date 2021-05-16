@@ -24,7 +24,7 @@ of an atom and compare that mass with half of the
 initial mass.
 |#
 ; no requirement on implement the log function
-
+(defvar log_2)
 (setq log_2 0.6931)
 (defconstant E 2.7)	; define constant E
 (setq re (massdecay 1 2 3))

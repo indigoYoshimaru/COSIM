@@ -31,8 +31,9 @@ class Generator():
                 params.append(param.identifier_name)
             f.write(','.join(params))
             f.write(');\r\n')
-
+        
         f.write(self.code_stream['main'])
+        # self.close_main()
         f.write(self.code_stream['function_imp'])
         f.close()
 
@@ -80,7 +81,7 @@ class Generator():
        self.code_stream+='pow('
     
     def gen_var(self, variable_name):
-        self.code_stream += 'double '+variable_name+'='
+        self.code_stream[self.s_name] += 'double '+variable_name+'='
         # no ; here because of the expression
 
     def gen_number(self, value):
