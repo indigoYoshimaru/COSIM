@@ -2,7 +2,6 @@
 
 from os import get_terminal_size
 
-
 space_char = "    "
 
 
@@ -80,6 +79,10 @@ class GroupTerm(Term):
         generator.close_main()
         for t in self.terms:
             t.gen_func(generator)
+    
+    def write_to_table(self, sym_tab, level):
+        if (level == 0):
+            print("==========SYMBOL TABLE==========")
 
 
 class StatementTerm(Term):
@@ -214,6 +217,14 @@ class IfStatementTerm(StatementTerm):
             self.else_statement.gen_main(generator)
             generator.gen_keyword('}')
 
+    def print_symbol(self, sym_tab, level):
+        # which one to use?
+        sym_tab.write_to_table(level, self.__class__.__name__)
+        sym_tab.write_to_table(level, self)
+        # create new symbol table
+        self.condition.print_symbol(sym_tab, level+1)
+        self.statement.print_symbol(sym_tab, level+1)
+        self.else_statement.print_symbol(sym_tab, level+1)
 
 class ExpressionTerm(Term):
     pass
