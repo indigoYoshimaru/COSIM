@@ -107,7 +107,11 @@ def parse_defvar(tokens, position):
     [current_position, _] = parse_token(
         tokens, current_position, 'keyword', 'defvar')
     [current_position, identifier] = parse_identifier(tokens, current_position)
-    [current_position, expression] = parse_expression(tokens, current_position)
+    expression=None
+    try:
+        [current_position, expression] = parse_expression(tokens, current_position)
+    except:
+        pass
 
     [current_position, _] = parse_token(
         tokens, current_position, "literal", ")")
