@@ -126,6 +126,11 @@ class DefVarTerm(StatementTerm):
         self.expression.gen_main(generator)
         generator.gen_keyword(';')
 
+    def gen_func(self, generator):
+        generator.gen_var(self.variable_name)
+        self.expression.gen_func(generator)
+        generator.gen_keyword(';')
+
 
 class DefunTerm(StatementTerm):
     def __init__(self, function_name, variables, statements):
@@ -233,6 +238,9 @@ class NumberExpressionTerm(ExpressionTerm):
     def gen_main(self, generator):
         generator.gen_number(self.value)
 
+    def gen_func(self, generator):
+        generator.gen_number(self.value)
+
 
 class IdentifierExpressionTerm(ExpressionTerm):
     def __init__(self, identifier_name):
@@ -246,6 +254,9 @@ class IdentifierExpressionTerm(ExpressionTerm):
         print(space_char*level, self.identifier_name)
 
     def gen_main(self, generator):
+        generator.gen_keyword(self.identifier_name)
+
+    def gen_func(self, generator):
         generator.gen_keyword(self.identifier_name)
 
 
@@ -281,7 +292,6 @@ class OperatorExpressionTerm(ExpressionTerm):
             generator.gen_keyword(self.operator)# change this to gen_operator
             self.right.gen_main(generator)
             
-
 
 class FunctionCallExpressionTerm(ExpressionTerm):
     def __init__(self, function_name, params):
