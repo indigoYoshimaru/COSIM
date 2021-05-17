@@ -1,11 +1,9 @@
 # defining all lexical class
 
-from os import get_terminal_size
-
-
+# few notes about symbol table:
+#   1. although 'if' key word will not be in the symbol table,
+#       we need to define scope for its inner statement 
 space_char = "    "
-
-
 class Term:
     def value(self):
         return self
@@ -25,7 +23,7 @@ class Term:
     def gen_func(self, generator):
         pass
 
-    def print_symbol(self, sym_tab, level):
+    def print_symbol(self, sym_tab, level, scope):
         pass
 
 
@@ -89,6 +87,12 @@ class GroupTerm(Term):
         # for t in self.terms:
         #     t.gen_func(generator)
 
+    def print_symbol(self, sym_tab, level, scope):
+        if (level == 0):
+            print("==========SYMBOL TABLE==========")
+    
+        for t in self.terms:
+            t.print_symbol(sym_tab, level, scope)
 
 class StatementTerm(Term):
     pass
@@ -111,6 +115,9 @@ class DefConstantTerm(StatementTerm):
 
     def pre_gen_code(self, generator):
         generator.pregen('constant', self)
+
+    def print_symbol(self, sym_tab, level, scope):
+        sym_tab.write_table(self.constant_name, 'constant', str(scope)+'-'+str(level))
 
 
 class DefVarTerm(StatementTerm):
@@ -139,6 +146,9 @@ class DefVarTerm(StatementTerm):
             generator.gen_number(0)
         generator.gen_keyword(';')
 
+    def print_symbol(self, sym_tab, level, scope):
+        sym_tab.write_table(self.variable_name, 'variable', str(scope)+'-'+str(level))
+        #self.expression.print_symbol(sym_tab, level+1)
 
 class DefunTerm(StatementTerm):
     def __init__(self, function_name, variables, statements):
@@ -168,6 +178,11 @@ class DefunTerm(StatementTerm):
         self.statements.gen_func(generator)
         generator.gen_keyword('}')
 
+    def print_symbol(self, sym_tab, level, scope):
+        sym_tab.write_table(self.function_name, 'function', str(scope)+'-'+str(level))
+        self.variables.print_symbol(sym_tab, level+1, scope)
+        self.statements.print_symbol(sym_tab, level+1, scope)
+     
 
 class AssignmentStatementTerm(StatementTerm):
     def __init__(self,  variable_name, expression):
@@ -227,6 +242,11 @@ class IfStatementTerm(StatementTerm):
             self.else_statement.gen_main(generator)
             generator.gen_keyword('}')
 
+    def print_symbol(self, sym_tab, level, scope):
+        sym_tab.write_table(self.condition, 'if statement', str(scope)+'-'+str(level))
+        self.condition.print_symbol(sym_tab, level+1, scope)
+        self.statement.print_symbol(sym_tab, level+1, scope)
+        self.else_statement.print_symbol(sym_tab, level+1, scope)
 
 class ExpressionTerm(Term):
     pass
@@ -260,6 +280,9 @@ class IdentifierExpressionTerm(ExpressionTerm):
 
     def gen_main(self, generator):
         generator.gen_keyword(self.identifier_name)
+
+    def print_symbol(self, sym_tab, level,scope):
+        sym_tab.write_table(self.identifier_name, 'identifier',str(scope)+'-'+str(level))
 
 
 class OperatorExpressionTerm(ExpressionTerm):
@@ -296,7 +319,7 @@ class OperatorExpressionTerm(ExpressionTerm):
         self.right.gen_main(generator)
         generator.gen_keyword(')')
 
-
+    
 class FunctionCallExpressionTerm(ExpressionTerm):
     def __init__(self, function_name, params):
         super().__init__
