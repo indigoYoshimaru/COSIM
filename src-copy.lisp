@@ -18,6 +18,7 @@ of an atom after a period of decay.
 ; main function
 
 #|
+
 The main function applies the mass-decay function 
 with user's inputs to calculate the remaining mass 
 of an atom and compare that mass with half of the 
@@ -29,7 +30,7 @@ initial mass.
 ; (defconstant log_2 0.6931)
 (defconstant E 2.7)	
 ; define constant E
-(setq re (massdecay 1 2 3))
+(setq re (expt (tan (massdecay 1 2 3))))
 
 
 
