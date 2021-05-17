@@ -83,21 +83,11 @@ class GroupTerm(Term):
         
 
     def gen_func(self, generator):
-<<<<<<< HEAD
-        generator.close_main()
-        for t in self.terms:
-            t.gen_func(generator)
-    
-    def write_to_table(self, sym_tab, level):
-        if (level == 0):
-            print("==========SYMBOL TABLE==========")
-=======
         if self.is_root:
             generator.close_main()
             self.set_is_root(False)
         # for t in self.terms:
         #     t.gen_func(generator)
->>>>>>> e7ba3945a897b0be263adb2ca64af8be1abaa4f3
 
 
 class StatementTerm(Term):
