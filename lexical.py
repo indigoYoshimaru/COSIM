@@ -86,8 +86,8 @@ class GroupTerm(Term):
         if self.is_root:
             generator.close_main()
             self.set_is_root(False)
-        # for t in self.terms:
-        #     t.gen_func(generator)
+        for t in self.terms:
+            t.gen_func(generator)
 
 
 class StatementTerm(Term):
@@ -136,12 +136,15 @@ class DefVarTerm(StatementTerm):
         if self.expression:
             self.expression.gen_main(generator)
         else:
-            generator.gen_number(0)
+            generator.gen_number(self.expression.value)
         generator.gen_keyword(';')
-
+    
     def gen_func(self, generator):
         generator.gen_var(self.variable_name)
-        self.expression.gen_func(generator)
+        if self.expression:
+            self.expression.gen_func(generator)
+        else:
+            generator.gen_number(self.expression.value)
         generator.gen_keyword(';')
 
 
@@ -197,6 +200,12 @@ class AssignmentStatementTerm(StatementTerm):
         self.expression.gen_main(generator)
         generator.gen_keyword(';')
 
+    def gen_func(self, generator):
+        generator.gen_keyword(self.variable_name)
+        generator.gen_keyword('=')
+        self.expression.gen_func(generator)
+        generator.gen_keyword(';')
+
 
 class IfStatementTerm(StatementTerm):
     def __init__(self, condition, statement, else_statement):
@@ -230,8 +239,19 @@ class IfStatementTerm(StatementTerm):
         if self.else_statement != None:
             generator.gen_keyword('} else { ')
             self.else_statement.gen_main(generator)
-            generator.gen_keyword('}')
+        
+        generator.gen_keyword('}')
 
+    def gen_func(self, generator):
+        generator.gen_keyword('if (')
+        self.condition.gen_func(generator)
+        generator.gen_keyword('){ ')
+        self.statement.gen_func(generator)
+        if self.else_statement != None:
+            generator.gen_keyword('} else { ')
+            self.else_statement.gen_func(generator)
+            
+        generator.gen_keyword('}')
 
 class ExpressionTerm(Term):
     pass
@@ -250,7 +270,7 @@ class NumberExpressionTerm(ExpressionTerm):
 
     def gen_main(self, generator):
         generator.gen_number(self.value)
-
+    
     def gen_func(self, generator):
         generator.gen_number(self.value)
 
@@ -271,7 +291,6 @@ class IdentifierExpressionTerm(ExpressionTerm):
 
     def gen_func(self, generator):
         generator.gen_keyword(self.identifier_name)
-
 
 class OperatorExpressionTerm(ExpressionTerm):
     def __init__(self, operator, left, right):
@@ -294,18 +313,33 @@ class OperatorExpressionTerm(ExpressionTerm):
         self.right.print_cst(level+1)
 
     def gen_main(self, generator):
-        # if (self.operator == 'expt'):
-        #     generator.gen_operator('pow(')
-        #     self.left.gen_main(generator)
-        #     generator.gen_keyword(', ')
-        #     self.right.gen_main(generator)
-        #     generator.gen_keyword(')')
-        # else:
-        generator.gen_keyword('(')
-        self.left.gen_main(generator)
-        generator.gen_keyword(self.operator)  # change this to gen_operator
-        self.right.gen_main(generator)
-        generator.gen_keyword(')')
+        if (self.operator == 'expt'):
+            generator.gen_operator('pow(')
+            self.left.gen_main(generator)
+            generator.gen_keyword(', ')
+            self.right.gen_main(generator)
+            generator.gen_keyword(')')
+        else:
+            generator.gen_keyword('(')
+            self.left.gen_main(generator)
+            generator.gen_keyword(self.operator)  # change this to gen_operator
+            self.right.gen_main(generator)
+            generator.gen_keyword(')')
+    
+    def gen_func(self, generator):
+        if (self.operator == 'expt'):
+            generator.gen_operator('pow(')
+            self.left.gen_func(generator)
+            generator.gen_keyword(', ')
+            self.right.gen_func(generator)
+            generator.gen_keyword(')')
+        else:
+            generator.gen_keyword('(')
+            self.left.gen_func(generator)
+            generator.gen_keyword(self.operator)  
+            self.right.gen_func(generator)
+            generator.gen_keyword(')')
+
 
 class FunctionCallExpressionTerm(ExpressionTerm):
     def __init__(self, function_name, params):
@@ -336,5 +370,17 @@ class FunctionCallExpressionTerm(ExpressionTerm):
             for i in range(1, len(self.params.terms)):
                 generator.gen_keyword(', ')
                 self.params.terms[i].gen_main(generator)
+
+        generator.gen_keyword(')')
+    
+    def gen_func(self, generator):
+        generator.gen_keyword(self.function_name)
+        generator.gen_keyword('( ')
+        if len(self.params.terms):
+            self.params.terms[0].gen_func(generator)
+
+            for i in range(1, len(self.params.terms)):
+                generator.gen_keyword(', ')
+                self.params.terms[i].gen_func(generator)
 
         generator.gen_keyword(')')
