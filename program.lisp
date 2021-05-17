@@ -28,7 +28,7 @@ initial mass.
 (setq mass (read))
 (terpri)
 
-(setq half-life (read))
+(setq halflife (read))
 (terpri)
 
 (setq time (read))
