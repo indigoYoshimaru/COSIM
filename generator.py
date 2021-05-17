@@ -39,7 +39,7 @@ class Generator():
             params = []
             for param in func.variables.terms:
                 params.append(param.identifier_name)
-            f.write(','.join(params))
+            f.write('double '+',double '.join(params))
             f.write(');\r\n')
 
         f.write(self.code_stream['main'])

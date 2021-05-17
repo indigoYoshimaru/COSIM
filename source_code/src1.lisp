@@ -10,7 +10,7 @@ initial mass.
 )
 
 (defun subtract (x minusterm)
-    (- (* x minusterm) minusterm)
+    (* (- x minusterm) minusterm)
 )
 
 (defconstant A 2.9)

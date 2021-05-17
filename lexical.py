@@ -2,8 +2,10 @@
 
 # few notes about symbol table:
 #   1. although 'if' key word will not be in the symbol table,
-#       we need to define scope for its inner statement 
+#       we need to define scope for its inner statement
 space_char = "    "
+
+
 class Term:
     def value(self):
         return self
@@ -41,6 +43,18 @@ class TokenTerm(Term):
 
     def print_cst(self, level):
         print(space_char*level, self.token.text)
+
+    def pre_gen_code(self, generator):
+        pass
+
+    def gen_main(self, generator):
+        generator.write_keyword(self.self.token.text)
+
+    def gen_func(self, generator):
+        generator.write_keyword(self.self.token.text)
+
+    def print_symbol(self, sym_tab, level, scope):
+        pass
 
 
 class GroupTerm(Term):
@@ -84,15 +98,17 @@ class GroupTerm(Term):
         if self.is_root:
             generator.close_main()
             self.set_is_root(False)
-        # for t in self.terms:
-        #     t.gen_func(generator)
+
+        for t in self.terms:
+            t.gen_func(generator)
 
     def print_symbol(self, sym_tab, level, scope):
         if (level == 0):
             print("==========SYMBOL TABLE==========")
-    
+
         for t in self.terms:
             t.print_symbol(sym_tab, level, scope)
+
 
 class StatementTerm(Term):
     pass
@@ -117,7 +133,8 @@ class DefConstantTerm(StatementTerm):
         generator.pregen('constant', self)
 
     def print_symbol(self, sym_tab, level, scope):
-        sym_tab.write_table(self.constant_name, 'constant', str(scope)+'-'+str(level))
+        sym_tab.write_table(self.constant_name, 'constant',
+                            str(scope)+'-'+str(level))
 
 
 class DefVarTerm(StatementTerm):
@@ -146,9 +163,13 @@ class DefVarTerm(StatementTerm):
             generator.gen_number(0)
         generator.gen_keyword(';')
 
+    # no gen_func needed here
+
     def print_symbol(self, sym_tab, level, scope):
-        sym_tab.write_table(self.variable_name, 'variable', str(scope)+'-'+str(level))
+        sym_tab.write_table(self.variable_name, 'variable',
+                            str(scope)+'-'+str(level))
         #self.expression.print_symbol(sym_tab, level+1)
+
 
 class DefunTerm(StatementTerm):
     def __init__(self, function_name, variables, statements):
@@ -160,6 +181,8 @@ class DefunTerm(StatementTerm):
     def print_ast(self, level):
         print(space_char*level, self.__class__.__name__)
         print(space_char*(level+1), "Function name: ", self.function_name)
+        print(space_char*(level+1), "Parameters:")
+        self.variables.print_ast(level+2)
         print(space_char*(level+1), "Statements: ")
         self.statements.print_ast(level+2)
 
@@ -171,18 +194,24 @@ class DefunTerm(StatementTerm):
         generator.pregen('function', self)
 
     def gen_func(self, generator):
+        generator.gen_keyword('double ')
         generator.gen_keyword(self.function_name)
-        generator.gen_keyword('(')
-        self.variables.gen_func(generator)
+        generator.gen_keyword('( ')
+        if len(self.variables.terms):
+            self.variables.terms[0].gen_func(generator)
+            for i in range(1, len(self.variables.terms)):
+                generator.gen_keyword(', ')
+                self.variables.terms[i].gen_func(generator)
         generator.gen_keyword('){ return')
         self.statements.gen_func(generator)
         generator.gen_keyword('}')
 
     def print_symbol(self, sym_tab, level, scope):
-        sym_tab.write_table(self.function_name, 'function', str(scope)+'-'+str(level))
+        sym_tab.write_table(self.function_name, 'function',
+                            str(scope)+'-'+str(level))
         self.variables.print_symbol(sym_tab, level+1, scope)
         self.statements.print_symbol(sym_tab, level+1, scope)
-     
+
 
 class AssignmentStatementTerm(StatementTerm):
     def __init__(self,  variable_name, expression):
@@ -206,6 +235,8 @@ class AssignmentStatementTerm(StatementTerm):
         generator.gen_keyword('=')
         self.expression.gen_main(generator)
         generator.gen_keyword(';')
+
+    # no need gen_func here
 
 
 class IfStatementTerm(StatementTerm):
@@ -237,16 +268,22 @@ class IfStatementTerm(StatementTerm):
         self.condition.gen_main(generator)
         generator.gen_keyword('){ ')
         self.statement.gen_main(generator)
+        generator.gen_keyword('} ')
         if self.else_statement != None:
             generator.gen_keyword('} else { ')
             self.else_statement.gen_main(generator)
             generator.gen_keyword('}')
 
+    # no need gen_func here
+
     def print_symbol(self, sym_tab, level, scope):
-        sym_tab.write_table(self.condition, 'if statement', str(scope)+'-'+str(level))
+        # sym_tab.write_table(self.condition, 'if statement',
+        #                     str(scope)+'-'+str(level))
         self.condition.print_symbol(sym_tab, level+1, scope)
         self.statement.print_symbol(sym_tab, level+1, scope)
-        self.else_statement.print_symbol(sym_tab, level+1, scope)
+        if self.else_statement != None:
+            self.else_statement.print_symbol(sym_tab, level+1, scope)
+
 
 class ExpressionTerm(Term):
     pass
@@ -266,6 +303,9 @@ class NumberExpressionTerm(ExpressionTerm):
     def gen_main(self, generator):
         generator.gen_number(self.value)
 
+    def gen_func(self, generator):
+        generator.gen_number(self.value)
+
 
 class IdentifierExpressionTerm(ExpressionTerm):
     def __init__(self, identifier_name):
@@ -281,8 +321,12 @@ class IdentifierExpressionTerm(ExpressionTerm):
     def gen_main(self, generator):
         generator.gen_keyword(self.identifier_name)
 
-    def print_symbol(self, sym_tab, level,scope):
-        sym_tab.write_table(self.identifier_name, 'identifier',str(scope)+'-'+str(level))
+    def gen_func(self, generator):
+        generator.gen_keyword(self.identifier_name)
+
+    def print_symbol(self, sym_tab, level, scope):
+        sym_tab.write_table(self.identifier_name,
+                            'identifier', str(scope)+'-'+str(level))
 
 
 class OperatorExpressionTerm(ExpressionTerm):
@@ -306,20 +350,20 @@ class OperatorExpressionTerm(ExpressionTerm):
         self.right.print_cst(level+1)
 
     def gen_main(self, generator):
-        # if (self.operator == 'expt'):
-        #     generator.gen_operator('pow(')
-        #     self.left.gen_main(generator)
-        #     generator.gen_keyword(', ')
-        #     self.right.gen_main(generator)
-        #     generator.gen_keyword(')')
-        # else:
         generator.gen_keyword('(')
         self.left.gen_main(generator)
         generator.gen_keyword(self.operator)  # change this to gen_operator
         self.right.gen_main(generator)
         generator.gen_keyword(')')
 
-    
+    def gen_func(self, generator):
+        generator.gen_keyword('(')
+        self.left.gen_func(generator)
+        generator.gen_keyword(self.operator)
+        self.right.gen_func(generator)
+        generator.gen_keyword(')')
+
+
 class FunctionCallExpressionTerm(ExpressionTerm):
     def __init__(self, function_name, params):
         super().__init__
@@ -340,7 +384,7 @@ class FunctionCallExpressionTerm(ExpressionTerm):
 
     def gen_main(self, generator):
         generator.gen_keyword(self.function_name)
-        generator.gen_keyword('( ')
+        generator.gen_keyword('(')
 
         # self.params.gen_main(generator)
         if len(self.params.terms):
@@ -350,4 +394,14 @@ class FunctionCallExpressionTerm(ExpressionTerm):
                 generator.gen_keyword(', ')
                 self.params.terms[i].gen_main(generator)
 
+        generator.gen_keyword(')')
+
+    def gen_func(self, generator):
+        generator.gen_keyword(self.function_name)
+        generator.gen_keyword('( ')
+        if len(self.params.terms):
+            self.params.terms[0].gen_func(generator)
+            for i in range(1, len(self.params.terms)):
+                generator.gen_keyword(', ')
+                self.params.terms[i].gen_func(generator)
         generator.gen_keyword(')')
