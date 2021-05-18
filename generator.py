@@ -12,7 +12,6 @@ class Generator():
         'function': [],
         'constant': []
     }
-    print(glob_dec['function'])
 
     code_stream = {
         'main': '', 'function_imp': ''

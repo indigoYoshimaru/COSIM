@@ -1,0 +1,457 @@
+PS D:\2021sem2\principle_programming_language\COSIM-proj\COSIM> python main.py -i source_code\src.lisp 
+[]
+src
+(defvar x) (setq x 1) (if (< x 2) (write (+ x 4)) (write (- 5 6)))
+==========TOKENS=========
+(    defvar    x    )    (    setq    x    1    )    (    if    (    <    x    2    )    (    write    (    +    x    4    )    )    (    write    (    -    5    6    )    )    )
+==========CONCRETE SYNTAX TREE==========
+ x
+ x
+     1.0
+ if
+     <
+         x
+         2.0
+     write
+         +
+             x
+             4.0
+     write
+         -
+             5.0
+             6.0
+==========ABSTRACT SYNTAX TREE==========
+ DefVarTerm
+     Variable name:  x
+ AssignmentStatementTerm
+     Variable name:  x
+     Expression:
+         NumberExpressionTerm 1.0
+ IfStatementTerm
+     Condition:
+         OperatorExpressionTerm
+             Operator:  <
+             Left expression:
+                 IdentifierExpressionTerm x
+             Right expression:
+                 NumberExpressionTerm 2.0
+     True branch:
+         FunctionCallExpressionTerm
+         Functions name:  write
+             Params:
+                 OperatorExpressionTerm
+                     Operator:  +
+                     Left expression:
+                     Right expression:
+                         NumberExpressionTerm 4.0
+     False branch:
+         FunctionCallExpressionTerm
+         Functions name:  write
+             Params:
+                 OperatorExpressionTerm
+                     Operator:  -
+                     Left expression:
+                         NumberExpressionTerm 5.0
+                     Right expression:
+                         NumberExpressionTerm 6.0
+==========SYMBOL TABLE==========
++--------+----------+-------+
+| Symbol |   Type   | Scope |
++--------+----------+-------+
+|   x    | variable |  0-0  |
++--------+----------+-------+
+b'5'
+PS D:\2021sem2\principle_programming_language\COSIM-proj\COSIM> python main.py -i source_code\src1.lisp
+[]
+src1
+(defun sum (x sumterm) (+ x sumterm) ) (defun subtract (x minusterm) (* (- x minusterm) minusterm) ) (defconstant A 2.9) (defconstant B 6) (defvar res) (defvar x) (setq x 1) (if (< A B) (setq res (sum x A)) (setq res (subtract x B))) (write res)
+==========TOKENS=========
+(    defun    sum    (    x    sumterm    )    (    +    x    sumterm    )    )    (    defun    subtract    (    x    minusterm    )    (    *    (    -    x    minusterm    )    minusterm    )   
+ )    (    defconstant    A    2.9    )    (    defconstant    B    6    )    (    defvar    res    )    (    defvar    x    )    (    setq    x    1    )    (    if    (    <    A    B    )    (  
+  setq    res    (    sum    x    A    )    )    (    setq    res    (    subtract    x    B    )    )    )    (    write    res    )
+==========CONCRETE SYNTAX TREE==========
+ sum
+     +
+         x
+         sumterm
+ subtract
+     *
+         -
+             x
+             minusterm
+         minusterm
+ A
+ 2.9
+ B
+ 6.0
+ res
+ x
+ x
+     1.0
+ if
+     <
+         A
+         B
+     res
+         sum
+             x
+             A
+     res
+         subtract
+             x
+             B
+ write
+     res
+==========ABSTRACT SYNTAX TREE==========
+ DefunTerm
+     Function name:  sum
+     Parameters:
+         IdentifierExpressionTerm x
+         IdentifierExpressionTerm sumterm
+     Statements:
+         OperatorExpressionTerm
+             Operator:  +
+             Left expression:
+                 IdentifierExpressionTerm x
+             Right expression:
+                 IdentifierExpressionTerm sumterm
+ DefunTerm
+     Function name:  subtract
+     Parameters:
+         IdentifierExpressionTerm x
+         IdentifierExpressionTerm minusterm
+     Statements:
+         OperatorExpressionTerm
+             Operator:  *
+             Left expression:
+                 OperatorExpressionTerm
+                     Operator:  -
+                     Left expression:
+                         IdentifierExpressionTerm x
+                     Right expression:
+                         IdentifierExpressionTerm minusterm
+             Right expression:
+                 IdentifierExpressionTerm minusterm
+ DefConstantTerm
+     Constant name:  A
+     Value:  2.9
+ DefConstantTerm
+     Constant name:  B
+     Value:  6.0
+ DefVarTerm
+     Variable name:  res
+ DefVarTerm
+     Variable name:  x
+ AssignmentStatementTerm
+     Variable name:  x
+     Expression:
+         NumberExpressionTerm 1.0
+ IfStatementTerm
+     Condition:
+         OperatorExpressionTerm
+             Operator:  <
+             Left expression:
+                 IdentifierExpressionTerm A
+             Right expression:
+                 IdentifierExpressionTerm B
+     True branch:
+         AssignmentStatementTerm
+             Variable name:  res
+             Expression:
+                 FunctionCallExpressionTerm
+                 Functions name:  sum
+                     Params:
+                         IdentifierExpressionTerm x
+                         IdentifierExpressionTerm A
+     False branch:
+         AssignmentStatementTerm
+             Variable name:  res
+             Expression:
+                 FunctionCallExpressionTerm
+                 Functions name:  subtract
+                     Params:
+                         IdentifierExpressionTerm x
+                         IdentifierExpressionTerm B
+ Functions name:  write
+     Params:
+         IdentifierExpressionTerm res
+==========SYMBOL TABLE==========
++-----------+------------+-------+
+|   Symbol  |    Type    | Scope |
++-----------+------------+-------+
+|    sum    |  function  |  0-0  |
+|  subtract |  function  |  0-0  |
+|     A     |  constant  |  0-0  |
+|     B     |  constant  |  0-0  |
+|    res    |  variable  |  0-0  |
+|     x     |  variable  |  0-0  |
+|     x     | identifier |  0-1  |
+|  sumterm  | identifier |  0-1  |
+|     x     | identifier |  0-1  |
+| minusterm | identifier |  0-1  |
++-----------+------------+-------+
+b'3.9'
+PS D:\2021sem2\principle_programming_language\COSIM-proj\COSIM> python main.py -i source_code\src2.lisp
+[]
+src2
+(defun massdecay (mass time halflife) (* mass (expt E (* (/ (- 0 log_2) halflife) time))) ) (defconstant E 2.7) (defconstant log_2 0.6931) (defvar mass) (defvar halflife) (defvar time) (defvar re) 
+(setq mass (read)) (setq halflife (read)) (setq time (read)) (setq re (massdecay mass time halflife)) (if (> re (/ mass 2)) (write mass) (write re))
+==========TOKENS=========
+(    defun    massdecay    (    mass    time    halflife    )    (    *    mass    (    expt    E    (    *    (    /    (    -    0    log_2    )    halflife    )    time    )    )    )    )    ( 
+   defconstant    E    2.7    )    (    defconstant    log_2    0.6931    )    (    defvar    mass    )    (    defvar    halflife    )    (    defvar    time    )    (    defvar    re    )    (   
+ setq    mass    (    read    )    )    (    setq    halflife    (    read    )    )    (    setq    time    (    read    )    )    (    setq    re    (    massdecay    mass    time    halflife    
+)    )    (    if    (    >    re    (    /    mass    2    )    )    (    write    mass    )    (    write    re    )    )
+==========CONCRETE SYNTAX TREE==========
+ massdecay
+     *
+         mass
+         expt
+             E
+             *
+                 /
+                     -
+                         0.0
+                         log_2
+                     halflife
+                 time
+ E
+ 2.7
+ log_2
+ 0.6931
+ mass
+ halflife
+ time
+ re
+ mass
+     read
+ halflife
+     read
+ time
+     read
+ re
+     massdecay
+         mass
+         time
+         halflife
+ if
+     >
+         re
+         /
+             mass
+             2.0
+     write
+         mass
+     write
+         re
+==========ABSTRACT SYNTAX TREE==========
+ DefunTerm
+     Function name:  massdecay
+     Parameters:
+         IdentifierExpressionTerm mass
+         IdentifierExpressionTerm time
+         IdentifierExpressionTerm halflife
+     Statements:
+         OperatorExpressionTerm
+             Operator:  *
+             Left expression:
+                 IdentifierExpressionTerm mass
+             Right expression:
+                 FunctionCallExpressionTerm
+                 Functions name:  expt
+                     Params:
+                         IdentifierExpressionTerm E
+                         OperatorExpressionTerm
+                             Operator:  *
+                             Left expression:
+                                 OperatorExpressionTerm
+                                     Operator:  /
+                                     Left expression:
+                                         OperatorExpressionTerm
+                                             Operator:  -
+                                             Left expression:
+                                                 NumberExpressionTerm 0.0
+                                             Right expression:
+                                                 IdentifierExpressionTerm log_2
+                                     Right expression:
+                                         IdentifierExpressionTerm halflife
+                             Right expression:
+                                 IdentifierExpressionTerm time
+ DefConstantTerm
+     Constant name:  E
+     Value:  2.7
+ DefConstantTerm
+     Constant name:  log_2
+     Value:  0.6931
+ DefVarTerm
+     Variable name:  mass
+ DefVarTerm
+     Variable name:  halflife
+ DefVarTerm
+     Variable name:  time
+ DefVarTerm
+     Variable name:  re
+ AssignmentStatementTerm
+     Variable name:  mass
+     Expression:
+         FunctionCallExpressionTerm
+         Functions name:  read
+             Params:
+ AssignmentStatementTerm
+     Variable name:  halflife
+     Expression:
+         FunctionCallExpressionTerm
+         Functions name:  read
+             Params:
+ AssignmentStatementTerm
+     Variable name:  time
+     Expression:
+         FunctionCallExpressionTerm
+         Functions name:  read
+             Params:
+ AssignmentStatementTerm
+     Variable name:  re
+     Expression:
+         FunctionCallExpressionTerm
+         Functions name:  massdecay
+             Params:
+                 IdentifierExpressionTerm mass
+                 IdentifierExpressionTerm time
+                 IdentifierExpressionTerm halflife
+ IfStatementTerm
+     Condition:
+         OperatorExpressionTerm
+             Operator:  >
+             Left expression:
+                 IdentifierExpressionTerm re
+             Right expression:
+                 OperatorExpressionTerm
+                     Operator:  /
+                     Left expression:
+                         IdentifierExpressionTerm mass
+                     Right expression:
+                         NumberExpressionTerm 2.0
+     True branch:
+         FunctionCallExpressionTerm
+         Functions name:  write
+             Params:
+                 IdentifierExpressionTerm mass
+     False branch:
+         FunctionCallExpressionTerm
+         Functions name:  write
+             Params:
+==========SYMBOL TABLE==========
++-----------+------------+-------+
+|   Symbol  |    Type    | Scope |
++-----------+------------+-------+
+| massdecay |  function  |  0-0  |
+|     E     |  constant  |  0-0  |
+|   log_2   |  constant  |  0-0  |
+|    mass   |  variable  |  0-0  |
+|  halflife |  variable  |  0-0  |
+|    time   |  variable  |  0-0  |
+|     re    |  variable  |  0-0  |
+|    mass   | identifier |  0-1  |
+|    time   | identifier |  0-1  |
+|  halflife | identifier |  0-1  |
++-----------+------------+-------+
+3
+4
+5
+b'1.26882'
+PS D:\2021sem2\principle_programming_language\COSIM-proj\COSIM> python main.py -i source_code\src3.lisp
+[]
+src3
+(defun wavelength (f) (/ c f) ) (defconstant c 3) (defvar f) (defvar w) (setq f (read)) (setq w (wavelength f)) (if(< w (/ 1 2)) (setq w 0)) (write w)
+==========TOKENS=========
+(    defun    wavelength    (    f    )    (    /    c    f    )    )    (    defconstant    c    3    )    (    defvar    f    )    (    defvar    w    )    (    setq    f    (    read    )    )  
+  (    setq    w    (    wavelength    f    )    )    (    if    (    <    w    (    /    1    2    )    )    (    setq    w    0    )    )    (    write    w    )
+==========CONCRETE SYNTAX TREE==========
+ wavelength
+     /
+         c
+         f
+ c
+ 3.0
+ f
+ w
+ f
+     read
+ w
+     wavelength
+         f
+ if
+     <
+         w
+         /
+             1.0
+             2.0
+     w
+         0.0
+ write
+     w
+==========ABSTRACT SYNTAX TREE==========
+ DefunTerm
+     Function name:  wavelength
+     Parameters:
+         IdentifierExpressionTerm f
+     Statements:
+         OperatorExpressionTerm
+             Operator:  /
+             Left expression:
+                 IdentifierExpressionTerm c
+             Right expression:
+                 IdentifierExpressionTerm f
+ DefConstantTerm
+     Constant name:  c
+     Value:  3.0
+ DefVarTerm
+     Variable name:  f
+ DefVarTerm
+     Variable name:  w
+ AssignmentStatementTerm
+     Variable name:  f
+     Expression:
+         FunctionCallExpressionTerm
+         Functions name:  read
+             Params:
+ AssignmentStatementTerm
+     Variable name:  w
+     Expression:
+         FunctionCallExpressionTerm
+         Functions name:  wavelength
+             Params:
+                 IdentifierExpressionTerm f
+ IfStatementTerm
+     Condition:
+         OperatorExpressionTerm
+             Operator:  <
+             Left expression:
+                 IdentifierExpressionTerm w
+             Right expression:
+                 OperatorExpressionTerm
+                     Operator:  /
+                     Left expression:
+                         NumberExpressionTerm 1.0
+                     Right expression:
+                         NumberExpressionTerm 2.0
+     True branch:
+         AssignmentStatementTerm
+             Variable name:  w
+             Expression:
+                 NumberExpressionTerm 0.0
+ FunctionCallExpressionTerm
+ Functions name:  write
+     Params:
+         IdentifierExpressionTerm w
+==========SYMBOL TABLE==========
++------------+------------+-------+
+|   Symbol   |    Type    | Scope |
++------------+------------+-------+
+| wavelength |  function  |  0-0  |
+|     c      |  constant  |  0-0  |
+|     f      |  variable  |  0-0  |
+|     w      |  variable  |  0-0  |
+|     f      | identifier |  0-1  |
++------------+------------+-------+
+0.2
+b'15'
