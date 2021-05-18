@@ -168,7 +168,7 @@ class DefVarTerm(StatementTerm):
     def print_symbol(self, sym_tab, level, scope):
         sym_tab.write_table(self.variable_name, 'variable',
                             str(scope)+'-'+str(level))
-        #self.expression.print_symbol(sym_tab, level+1)
+        # self.expression.print_symbol(sym_tab, level+1)
 
 
 class DefunTerm(StatementTerm):
@@ -196,15 +196,15 @@ class DefunTerm(StatementTerm):
     def gen_func(self, generator):
         generator.gen_keyword('double ')
         generator.gen_keyword(self.function_name)
-        generator.gen_keyword('( ')
+        generator.gen_keyword('( double ')
         if len(self.variables.terms):
             self.variables.terms[0].gen_func(generator)
             for i in range(1, len(self.variables.terms)):
-                generator.gen_keyword(', ')
+                generator.gen_keyword(', double ')
                 self.variables.terms[i].gen_func(generator)
         generator.gen_keyword('){ return')
         self.statements.gen_func(generator)
-        generator.gen_keyword('}')
+        generator.gen_keyword(';}')
 
     def print_symbol(self, sym_tab, level, scope):
         sym_tab.write_table(self.function_name, 'function',
@@ -227,7 +227,7 @@ class AssignmentStatementTerm(StatementTerm):
 
     def print_cst(self, level):
         print(space_char*(level), self.variable_name)
-        #print(space_char*(level), self.variable_name)
+        # print(space_char*(level), self.variable_name)
         self.expression.print_cst(level+1)
 
     def gen_main(self, generator):
@@ -270,7 +270,7 @@ class IfStatementTerm(StatementTerm):
         self.statement.gen_main(generator)
         generator.gen_keyword('} ')
         if self.else_statement != None:
-            generator.gen_keyword('} else { ')
+            generator.gen_keyword('else { ')
             self.else_statement.gen_main(generator)
             generator.gen_keyword('}')
 
@@ -395,13 +395,16 @@ class FunctionCallExpressionTerm(ExpressionTerm):
                 self.params.terms[i].gen_main(generator)
 
         generator.gen_keyword(')')
+        if (self.function_name == 'write'):
+            generator.gen_keyword(';')
 
     def gen_func(self, generator):
-        generator.gen_keyword(self.function_name)
-        generator.gen_keyword('( ')
-        if len(self.params.terms):
-            self.params.terms[0].gen_func(generator)
-            for i in range(1, len(self.params.terms)):
-                generator.gen_keyword(', ')
-                self.params.terms[i].gen_func(generator)
-        generator.gen_keyword(')')
+        if (self.function_name != 'write' and self.function_name != 'read'):
+            generator.gen_keyword(self.function_name)
+            generator.gen_keyword('( ')
+            if len(self.params.terms):
+                self.params.terms[0].gen_func(generator)
+                for i in range(1, len(self.params.terms)):
+                    generator.gen_keyword(', ')
+                    self.params.terms[i].gen_func(generator)
+            generator.gen_keyword(')')

@@ -107,9 +107,10 @@ def parse_defvar(tokens, position):
     [current_position, _] = parse_token(
         tokens, current_position, 'keyword', 'defvar')
     [current_position, identifier] = parse_identifier(tokens, current_position)
-    expression=None
+    expression = None
     try:
-        [current_position, expression] = parse_expression(tokens, current_position)
+        [current_position, expression] = parse_expression(
+            tokens, current_position)
     except:
         pass
 
@@ -172,7 +173,7 @@ def parse_if(tokens, position):
     [current_position, statement] = parse_statement(tokens, current_position)
     else_statement = None
     try:
-        [current_position, else_statement] = parse_statement_expression(
+        [current_position, else_statement] = parse_statement(
             tokens, current_position)
     except:
         pass

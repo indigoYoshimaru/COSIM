@@ -78,10 +78,10 @@ class Generator():
     def start_main(self):
         # set code stream name = main
         self.s_name = 'main'
-        self.code_stream[self.s_name] += 'void main(){\r\n'
+        self.code_stream[self.s_name] += 'int main(){\r\n'
 
     def close_main(self):
-        self.code_stream[self.s_name] += '}'  # close main
+        self.code_stream[self.s_name] += '\r\n return 0; }'  # close main
         self.s_name = 'function_imp'
 
     def gen_keyword(self, keyword):  # keywords can be if, else,etc

@@ -15,8 +15,12 @@ initial mass.
 
 (defconstant A 2.9)
 (defconstant B 6)
+(defvar res)
+(defvar x)
 (setq x 1)
 
 (if (< A B) 
     (setq res (sum x A))
-    (subtract x B))
+    (setq res (subtract x B)))
+
+(write res)

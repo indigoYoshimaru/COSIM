@@ -14,7 +14,6 @@ class SymbolTable:
 
     def visualize(self):
         self.clean_table.field_names = ['Symbol', 'Type', 'Scope']
-        print(self.table)
         for rows in self.table:
             values = self.table[rows]
             for row in values:
